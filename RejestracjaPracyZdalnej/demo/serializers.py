@@ -7,4 +7,4 @@ class PracownikSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Pracownik
-        fields = ['id', 'imie', 'nazwisko', 'pesel', 'czyKierownik', 'mail', 'haslo']
+        fields = ['id', 'imie', 'nazwisko', 'pesel', 'czyKierownik', 'czyAdministrator', 'login', 'mail', 'haslo']
