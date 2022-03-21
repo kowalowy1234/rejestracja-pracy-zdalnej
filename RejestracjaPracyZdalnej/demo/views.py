@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from .models import *
 from .serializers import *
-from rest_framework import generics, permissions
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 
 
 class PracownikList(generics.ListCreateAPIView):
@@ -18,7 +19,6 @@ class PracownikDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Pracownik.objects.all()
     serializer_class = PracownikSerializer
     name = 'pracownik-details'
-
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
