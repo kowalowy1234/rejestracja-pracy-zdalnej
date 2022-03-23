@@ -35,4 +35,5 @@ class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
     def get(self, request, *args, **kwargs):
-        return Response({'pracownicy': reverse(PracownikList.name, request=request),})
+        return Response({'pracownicy': reverse(PracownikList.name, request=request),
+                         'firmy': reverse(FirmaList.name, request=request),})
