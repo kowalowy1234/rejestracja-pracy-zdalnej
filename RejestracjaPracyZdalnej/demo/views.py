@@ -31,6 +31,19 @@ class FirmaDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = FirmaSerializer
     name = 'firma-details'
 
+
+class ZapisPracyList(generics.ListCreateAPIView):
+    queryset = ZapisPracy.objects.all()
+    serializer_class = ZapisPracySerializer
+    name = 'zapis-pracy-list'
+
+
+class ZapisPracyDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ZapisPracy.objects.all()
+    serializer_class = ZapisPracySerializer
+    name = 'zapis-pracy-details'
+
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 

@@ -16,3 +16,10 @@ class FirmaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Firma
         fields = ['id', 'nazwaFirmy']
+
+
+class ZapisPracySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ZapisPracy
+        fields = ['id', 'idPracownika', 'data', 'przepracowaneMinuty']

@@ -8,5 +8,7 @@ urlpatterns = [
     path('pracownik/<int:pk>', views.PracownikDetail.as_view(), name='pracownik-details'),
     path('firma', views.FirmaList.as_view(), name='firma-list'),
     path('firma/<int:pk>', views.FirmaDetail.as_view(), name='firma-details'),
+    path('zapis-pracy', views.ZapisPracyList.as_view(), name='zapis-pracy-list'),
+    path('zapis-pracy/<int:pk>', views.ZapisPracyDetail.as_view(), name='zapis-pracy-details'),
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
 ]

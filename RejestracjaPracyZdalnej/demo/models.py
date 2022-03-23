@@ -53,3 +53,13 @@ class Pracownik(models.Model):
         verbose_name_plural = "Pracownicy"
 
 
+class ZapisPracy(models.Model):
+    idPracownika = models.ForeignKey(Pracownik, on_delete=models.CASCADE)
+    data = models.DateTimeField()
+    przepracowaneMinuty = models.IntegerField()
+
+    def __str__(self):
+        return self.idPracownika
+
+    class Meta:
+        verbose_name_plural = "ZapisPrac"
