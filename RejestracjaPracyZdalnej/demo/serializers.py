@@ -4,7 +4,15 @@ from django.contrib.auth.models import User
 
 
 class PracownikSerializer(serializers.HyperlinkedModelSerializer):
+    firma = serializers.SlugRelatedField(queryset=Firma.objects.all(), slug_field='nazwaFirmy')
 
     class Meta:
         model = Pracownik
-        fields = ['id', 'imie', 'nazwisko', 'pesel', 'czyKierownik', 'czyAdministrator', 'login', 'mail', 'haslo']
+        fields = ['id', 'imie', 'nazwisko', 'pesel', 'firma', 'czyKierownik', 'czyAdministrator', 'login', 'mail', 'haslo']
+
+
+class FirmaSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Firma
+        fields = ['id', 'nazwaFirmy']

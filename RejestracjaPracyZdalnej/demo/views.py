@@ -20,8 +20,20 @@ class PracownikDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PracownikSerializer
     name = 'pracownik-details'
 
+class FirmaList(generics.ListCreateAPIView):
+    queryset = Firma.objects.all()
+    serializer_class = FirmaSerializer
+    name = 'firma-list'
+
+
+class FirmaDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Firma.objects.all()
+    serializer_class = FirmaSerializer
+    name = 'firma-details'
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
     def get(self, request, *args, **kwargs):
-        return Response({'pracownicy': reverse(PracownikList.name, request=request),})
+        return Response({'pracownicy': reverse(PracownikList.name, request=request),
+                         'firmy': reverse(FirmaList.name, request=request),})
