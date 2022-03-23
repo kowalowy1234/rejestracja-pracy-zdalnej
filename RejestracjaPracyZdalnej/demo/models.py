@@ -20,6 +20,7 @@ class Firma(models.Model):
         verbose_name_plural = "Firmy"
 
 
+
 class Pracownik(models.Model):
     imie = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=45)
@@ -51,5 +52,19 @@ class Pracownik(models.Model):
 
     class Meta:
         verbose_name_plural = "Pracownicy"
+
+class Praca(models.Model):
+    #idPracownika = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
+    dataRozpoczecia = models.DateTimeField
+    dataZakonczenia = models.DateTimeField
+    minutyStart = models.IntegerField
+    minutyPozostalo = models.IntegerField
+    zlecajacy = models.CharField(max_length=45)
+
+    def __str__(self):
+        return self.zlecajacy + ' ' + self.dataRozpoczecia
+
+    class Meta:
+        verbose_name_plural = "Prace"
 
 
