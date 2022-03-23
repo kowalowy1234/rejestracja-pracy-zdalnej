@@ -11,7 +11,7 @@ def get_random_string():
 
 
 class Firma(models.Model):
-    nazwaFirmy = models.CharField(max_length=45)
+    nazwaFirmy = models.CharField(max_length=45, unique=True)
 
     def __str__(self):
         return self.nazwaFirmy
@@ -29,6 +29,7 @@ class Pracownik(models.Model):
     czyAdministrator = models.BooleanField(default=False)
     mail = models.CharField(max_length=45)
     haslo = models.CharField(max_length=12, default=get_random_string())
+    login = models.CharField(max_length=20)
 
     def _peselRandom(self):
         peselChars = [char for char in str(self.pesel)]
@@ -44,7 +45,7 @@ class Pracownik(models.Model):
 
         return str(result)
 
-    login = property(_generatelogin)
+    # login = property(_generatelogin)
 
     def __str__(self):
         return self.imie + ' ' + self.nazwisko
