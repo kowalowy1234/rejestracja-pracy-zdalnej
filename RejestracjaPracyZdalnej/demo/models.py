@@ -10,10 +10,21 @@ def get_random_string():
     return result_str
 
 
+class Firma(models.Model):
+    nazwaFirmy = models.CharField(max_length=45)
+
+    def __str__(self):
+        return self.nazwaFirmy
+
+    class Meta:
+        verbose_name_plural = "Firmy"
+
+
 class Pracownik(models.Model):
     imie = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=45)
     pesel = models.CharField(max_length=11, unique=True)
+    firma = models.ForeignKey(Firma, related_name='firma', on_delete=models.DO_NOTHING, default=3)
     czyKierownik = models.BooleanField(default=False)
     czyAdministrator = models.BooleanField(default=False)
     mail = models.CharField(max_length=45)
@@ -40,3 +51,5 @@ class Pracownik(models.Model):
 
     class Meta:
         verbose_name_plural = "Pracownicy"
+
+
