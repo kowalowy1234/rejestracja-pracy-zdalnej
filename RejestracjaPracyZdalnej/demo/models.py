@@ -53,16 +53,17 @@ class Pracownik(models.Model):
     class Meta:
         verbose_name_plural = "Pracownicy"
 
+
 class Praca(models.Model):
-    #idPracownika = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
-    dataRozpoczecia = models.DateTimeField
-    dataZakonczenia = models.DateTimeField
-    minutyStart = models.IntegerField
-    minutyPozostalo = models.IntegerField
+    idPracownika = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
+    dataRozpoczecia = models.DateTimeField()
+    dataZakonczenia = models.DateTimeField()
+    minutyStart = models.IntegerField()
+    minutyPozostalo = models.IntegerField()
     zlecajacy = models.CharField(max_length=45)
 
     def __str__(self):
-        return self.zlecajacy + ' ' + self.dataRozpoczecia
+        return self.zlecajacy
 
     class Meta:
         verbose_name_plural = "Prace"
