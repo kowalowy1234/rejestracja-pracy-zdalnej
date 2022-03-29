@@ -23,3 +23,10 @@ class ZapisPracySerializer(serializers.ModelSerializer):
     class Meta:
         model = ZapisPracy
         fields = ['id', 'idPracownika', 'data', 'przepracowaneMinuty']
+
+
+class PracaSerializer(serializers.ModelSerializer):
+    #idPracownika = serializers.SlugRelatedField(queryset=Pracownik.objects.all(), slug_field='idPracownika')
+    class Meta:
+        model = Praca
+        fields = ['idPracownika','dataRozpoczecia', 'dataZakonczenia', 'minutyStart', 'minutyPozostalo', 'zlecajacy']
