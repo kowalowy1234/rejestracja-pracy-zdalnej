@@ -7,7 +7,8 @@ from rest_framework.reverse import reverse
 from rest_framework import permissions
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 class PracownikList(generics.ListCreateAPIView):
     queryset = Pracownik.objects.all()
@@ -55,10 +56,22 @@ class PracaDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PracaSerializer
     name = 'praca-details'
 
+class UserList(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+    name = 'user-list'
+
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+    name = 'user-details'
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
     def get(self, request, *args, **kwargs):
-        return Response({'pracownicy': reverse(PracownikList.name, request=request),
+        return Response({'pracownicy': reverse(UserList.name, request=request),
                          'firmy': reverse(FirmaList.name, request=request),
+                         'zapisy pracy': reverse(ZapisPracyList.name, request=request),
                          'prace': reverse(PracaList.name, request=request),})

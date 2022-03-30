@@ -70,7 +70,7 @@ class Pracownik(models.Model):
 
 
 class ZapisPracy(models.Model):
-    idPracownika = models.ForeignKey(Pracownik, on_delete=models.CASCADE)
+    idPracownika = models.ForeignKey(User, on_delete=models.DO_NOTHING)
     data = models.DateTimeField()
     przepracowaneMinuty = models.IntegerField()
 
@@ -82,7 +82,7 @@ class ZapisPracy(models.Model):
 
 
 class Praca(models.Model):
-    idPracownika = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
+    idPracownika = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
     dataRozpoczecia = models.DateTimeField()
     dataZakonczenia = models.DateTimeField()
     minutyStart = models.IntegerField()

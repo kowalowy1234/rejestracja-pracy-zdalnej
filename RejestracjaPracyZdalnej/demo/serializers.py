@@ -20,7 +20,7 @@ class PracownikSerializer(serializers.HyperlinkedModelSerializer):
 class UserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
         model = User
-        fields = ['id', 'email', 'is_staff', 'is_superuser', 'username', 'password', 'first_name', 'last_name', 'pesel',
+        fields = ['id', 'first_name', 'last_name', 'email', 'is_staff', 'is_superuser', 'username', 'password',  'pesel',
                   'phone', 'firma']
 
 
