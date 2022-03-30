@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 import random
 import string
 
@@ -20,11 +21,25 @@ class Firma(models.Model):
         verbose_name_plural = "Firmy"
 
 
+class User(AbstractUser):
+    email = models.EmailField(verbose_name='email', max_length=255, unique=True)
+    phone = models.CharField(null=True, max_length=255)
+    firma = models.ForeignKey(Firma, related_name='firma', on_delete=models.DO_NOTHING)
+    pesel = models.CharField(max_length=11, unique=True)
+    is_staff = models.BooleanField(null=True)
+    is_superuser = models.BooleanField(null=True)
+    REQUIRED_FIELDS = ['email', 'firma', 'is_staff', 'is_superuser', 'phone', 'first_name', 'last_name', 'pesel']
+    USERNAME_FIELD = 'username'
+
+    def get_username(self):
+        return self.username
+
+
 class Pracownik(models.Model):
     imie = models.CharField(max_length=45)
     nazwisko = models.CharField(max_length=45)
     pesel = models.CharField(max_length=11, unique=True)
-    firma = models.ForeignKey(Firma, related_name='firma', on_delete=models.DO_NOTHING, default=3)
+    # firma = models.ForeignKey(Firma, related_name='firma', on_delete=models.DO_NOTHING, default=3)
     czyKierownik = models.BooleanField(default=False)
     czyAdministrator = models.BooleanField(default=False)
     mail = models.CharField(max_length=45)
@@ -65,6 +80,7 @@ class ZapisPracy(models.Model):
     class Meta:
         verbose_name_plural = "ZapisPrac"
 
+
 class Praca(models.Model):
     idPracownika = models.ForeignKey(Pracownik, null=True, on_delete=models.SET_NULL)
     dataRozpoczecia = models.DateTimeField()
@@ -78,5 +94,3 @@ class Praca(models.Model):
 
     class Meta:
         verbose_name_plural = "Prace"
-
-

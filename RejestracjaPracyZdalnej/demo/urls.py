@@ -13,4 +13,6 @@ urlpatterns = [
     path('praca', views.PracaList.as_view(), name='praca-list'),
     path('praca/<int:pk>', views.PracaDetail.as_view(), name='praca-details'),
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
+    path('', include('djoser.urls')),
+    path('', include('djoser.urls.authtoken')),
 ]
