@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 import random
 import string
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 def get_random_string():
@@ -28,6 +30,7 @@ class User(AbstractUser):
     pesel = models.CharField(max_length=11, unique=True)
     is_staff = models.BooleanField(null=True)
     is_superuser = models.BooleanField(null=True)
+    isActive = models.BooleanField(null=True)
     REQUIRED_FIELDS = ['email', 'firma', 'is_staff', 'is_superuser', 'phone', 'first_name', 'last_name', 'pesel']
     USERNAME_FIELD = 'username'
 
@@ -83,14 +86,21 @@ class ZapisPracy(models.Model):
 
 class Praca(models.Model):
     idPracownika = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    dataRozpoczecia = models.DateTimeField()
-    dataZakonczenia = models.DateTimeField()
-    minutyStart = models.IntegerField()
-    minutyPozostalo = models.IntegerField()
-    zlecajacy = models.CharField(max_length=45)
+    dataRozpoczecia = models.DateTimeField(auto_now=True)
+    dataZakonczenia = models.DateTimeField(auto_now=True)
+    minutyStart = models.IntegerField(default=0)
+    minutyPozostalo = models.IntegerField(default=0)
+    zlecajacy = models.CharField(max_length=45, default=3)
+
 
     def __str__(self):
         return self.zlecajacy
 
     class Meta:
         verbose_name_plural = "Prace"
+
+
+    @receiver(post_save, sender=User)
+    def create_praca(instance, created, **kwargs):
+        if created:
+            Praca.objects.create(idPracownika=instance)
