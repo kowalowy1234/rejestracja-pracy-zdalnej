@@ -55,8 +55,8 @@ class ZapisPracy(models.Model):
 
 class Praca(models.Model):
     idPracownika = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    dataRozpoczecia = models.DateTimeField(default=datetime.date.today())
-    dataZakonczenia = models.DateTimeField(default=datetime.date.today())
+    dataRozpoczecia = models.DateField(default=datetime.date.today())
+    dataZakonczenia = models.DateField(default=datetime.date.today())
     minutyStart = models.IntegerField(default=0)
     minutyPozostalo = models.IntegerField(default=0)
     zlecajacy = models.CharField(max_length=45, default=3)
