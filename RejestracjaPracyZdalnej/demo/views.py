@@ -1,6 +1,4 @@
 from django.shortcuts import render
-from django.views.generic import UpdateView
-
 from .models import *
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -50,15 +48,6 @@ class PracaDetail(generics.RetrieveUpdateDestroyAPIView):
     name = 'praca-details'
 
 
-class PracaUpdateView(UpdateView):
-    model = Praca
-    fields = [ "dataRozpoczecia",
-               "dataZakonczenia",
-               "minutyStart",
-               "minutyPozostalo"]
-
-    success_url = "/"
-
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
@@ -78,4 +67,5 @@ class ApiRoot(generics.GenericAPIView):
         return Response({'pracownicy': reverse(UserList.name, request=request),
                          'firmy': reverse(FirmaList.name, request=request),
                          'zapisy pracy': reverse(ZapisPracyList.name, request=request),
-                         'prace': reverse(PracaList.name, request=request),})
+                         'prace': reverse(PracaList.name, request=request),
+                         'edycjaPracy':"http://127.0.0.1:8000/auth/praca/1",})
