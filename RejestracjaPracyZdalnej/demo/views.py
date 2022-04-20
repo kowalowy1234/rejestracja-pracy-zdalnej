@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.views.generic import UpdateView
+
 from .models import *
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -55,6 +57,17 @@ class PracaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Praca.objects.all()
     serializer_class = PracaSerializer
     name = 'praca-details'
+
+
+class PracaUpdateView(UpdateView):
+    model = Praca
+    fields = [ "dataRozpoczecia",
+               "dataZakonczenia",
+               "minutyStart",
+               "minutyPozostalo"]
+
+    success_url = "/"
+
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()

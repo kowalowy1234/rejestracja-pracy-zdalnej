@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import random
@@ -86,8 +88,8 @@ class ZapisPracy(models.Model):
 
 class Praca(models.Model):
     idPracownika = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    dataRozpoczecia = models.DateTimeField(auto_now=True)
-    dataZakonczenia = models.DateTimeField(auto_now=True)
+    dataRozpoczecia = models.DateTimeField(default=datetime.date.today())
+    dataZakonczenia = models.DateTimeField(default=datetime.date.today())
     minutyStart = models.IntegerField(default=0)
     minutyPozostalo = models.IntegerField(default=0)
     zlecajacy = models.CharField(max_length=45, default=3)

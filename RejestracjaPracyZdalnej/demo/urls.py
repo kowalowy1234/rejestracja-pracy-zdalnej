@@ -1,6 +1,7 @@
 from django.urls import path, include
 from . import views
 from django.contrib import admin
+from .views import PracaUpdateView
 
 admin.site.site_url = 'http://127.0.0.1:8000/demo/'
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
     path('', include('djoser.urls')),
     path('', include('djoser.urls.authtoken')),
+    path('<pk>/update', PracaUpdateView.as_view())
 ]
