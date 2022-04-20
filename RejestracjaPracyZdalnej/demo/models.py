@@ -32,7 +32,6 @@ class User(AbstractUser):
     pesel = models.CharField(max_length=11, unique=True)
     is_staff = models.BooleanField(null=True)
     is_superuser = models.BooleanField(null=True)
-    isActive = models.BooleanField(null=True)
     REQUIRED_FIELDS = ['email', 'firma', 'is_staff', 'is_superuser', 'phone', 'first_name', 'last_name', 'pesel']
     USERNAME_FIELD = 'username'
 
@@ -40,38 +39,6 @@ class User(AbstractUser):
         return self.username
 
 
-class Pracownik(models.Model):
-    imie = models.CharField(max_length=45)
-    nazwisko = models.CharField(max_length=45)
-    pesel = models.CharField(max_length=11, unique=True)
-    # firma = models.ForeignKey(Firma, related_name='firma', on_delete=models.DO_NOTHING, default=3)
-    czyKierownik = models.BooleanField(default=False)
-    czyAdministrator = models.BooleanField(default=False)
-    mail = models.CharField(max_length=45)
-    haslo = models.CharField(max_length=12, default=get_random_string())
-    login = models.CharField(max_length=20)
-
-    def _peselRandom(self):
-        peselChars = [char for char in str(self.pesel)]
-        randomPesel = ''
-        for i in range(4):
-            randomPesel += str(peselChars[random.randint(0, len(peselChars) - 1)])
-        return randomPesel
-
-    def _generatelogin(self):
-        imie = str(self.imie)
-        nazwisko = str(self.nazwisko)
-        result = '' + imie[0] + nazwisko + self._peselRandom()
-
-        return str(result)
-
-    # login = property(_generatelogin)
-
-    def __str__(self):
-        return self.imie + ' ' + self.nazwisko
-
-    class Meta:
-        verbose_name_plural = "Pracownicy"
 
 
 class ZapisPracy(models.Model):

@@ -12,16 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-class PracownikList(generics.ListCreateAPIView):
-    queryset = Pracownik.objects.all()
-    serializer_class = PracownikSerializer
-    name = 'pracownik-list'
 
-
-class PracownikDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Pracownik.objects.all()
-    serializer_class = PracownikSerializer
-    name = 'pracownik-details'
 
 class FirmaList(generics.ListCreateAPIView):
     queryset = Firma.objects.all()

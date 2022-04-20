@@ -8,13 +8,6 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class PracownikSerializer(serializers.HyperlinkedModelSerializer):
-    firma = serializers.SlugRelatedField(queryset=Firma.objects.all(), slug_field='nazwaFirmy')
-
-    class Meta:
-        model = Pracownik
-        fields = ['id', 'imie', 'nazwisko', 'pesel', 'firma', 'czyKierownik', 'czyAdministrator', 'login', 'mail',
-                  'haslo']
 
 
 class UserCreateSerializer(UserCreateSerializer):
