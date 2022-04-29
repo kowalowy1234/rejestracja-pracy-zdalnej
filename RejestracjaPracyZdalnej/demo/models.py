@@ -6,6 +6,7 @@ import random
 import string
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
 
 def get_random_string():
@@ -43,7 +44,7 @@ class User(AbstractUser):
 
 class ZapisPracy(models.Model):
     idPracownika = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-    data = models.DateTimeField()
+    data = models.DateField(default=datetime.date.today)
     przepracowaneMinuty = models.IntegerField()
 
     def __str__(self):
@@ -55,8 +56,8 @@ class ZapisPracy(models.Model):
 
 class Praca(models.Model):
     idPracownika = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    dataRozpoczecia = models.DateField(default=datetime.date.today())
-    dataZakonczenia = models.DateField(default=datetime.date.today())
+    dataRozpoczecia = models.DateField(default=datetime.date.today)
+    dataZakonczenia = models.DateField(default=datetime.date.today)
     minutyStart = models.IntegerField(default=0)
     minutyPozostalo = models.IntegerField(default=0)
     zlecajacy = models.CharField(max_length=45, default=3)

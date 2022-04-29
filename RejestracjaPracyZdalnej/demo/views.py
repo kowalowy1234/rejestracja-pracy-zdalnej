@@ -1,4 +1,7 @@
+from django.db.models import Sum
 from django.shortcuts import render
+from rest_framework.exceptions import NotFound
+
 from .models import *
 from .serializers import *
 from rest_framework import generics, permissions, status
@@ -60,6 +63,66 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserCreateSerializer
     name = 'user-details'
 
+
+class StatystykiList(generics.ListAPIView):
+    serializer_class = StatystykiSerializer
+    name = 'statystyki'
+    queryset = ZapisPracy.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        today = datetime.date.today()
+        thirty_days_ago = today - datetime.timedelta(days=30)
+
+        queryset = ZapisPracy.objects.filter(
+            data__gte=thirty_days_ago
+        ).values(
+            'idPracownika'
+        ).annotate(
+            przepracowaneMinuty=Sum('przepracowaneMinuty')
+        ).order_by('idPracownika')
+
+        if queryset:
+            return Response(queryset)
+        else:
+            raise NotFound()
+
+
+class StatystykiUser(generics.ListAPIView):
+    serializer_class = StatystykiSerializer
+    name = 'statystyki-details'
+
+    def list(self, request, *args, **kwargs):
+        today = datetime.date.today()
+        thirty_days_ago = today - datetime.timedelta(days=30)
+        slug = self.kwargs['pk']
+
+        queryset = ZapisPracy.objects.filter(
+            idPracownika=slug,
+            data__gte=thirty_days_ago
+        ).values(
+            'idPracownika'
+        ).annotate(
+            przepracowaneMinuty=Sum('przepracowaneMinuty')
+        )
+
+        if queryset:
+            return Response(queryset)
+        else:
+            raise NotFound()
+
+
+class StatystykiUserList(generics.ListAPIView):
+    serializer_class = StatystykiSerializer
+
+    def get_queryset(self):
+        slug = self.kwargs['pk']
+        queryset = ZapisPracy.objects.filter(idPracownika=slug)
+        if queryset:
+            return queryset
+        else:
+            raise NotFound()
+
+
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
 
@@ -68,4 +131,7 @@ class ApiRoot(generics.GenericAPIView):
                          'firmy': reverse(FirmaList.name, request=request),
                          'zapisy pracy': reverse(ZapisPracyList.name, request=request),
                          'prace': reverse(PracaList.name, request=request),
-                         'edycjaPracy':"http://127.0.0.1:8000/auth/praca/1",})
+                         'edycjaPracy': "http://127.0.0.1:8000/auth/praca/1",
+                         'statystyki': "http://127.0.0.1:8000/auth/statystyki",
+                         'statystykiUser': "http://127.0.0.1:8000/auth/statystyki-user/1",
+                         'statystykiUserList': "http://127.0.0.1:8000/auth/statystyki-user-list/1", })
