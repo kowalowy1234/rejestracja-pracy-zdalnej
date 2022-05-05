@@ -1,3 +1,4 @@
+from django.db.models import Count, Sum
 from rest_framework import serializers
 from .models import *
 from django.contrib.auth.models import User
@@ -34,3 +35,9 @@ class PracaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Praca
         fields = ['idPracownika', 'dataRozpoczecia', 'dataZakonczenia', 'minutyStart', 'minutyPozostalo', 'zlecajacy']
+
+
+class StatystykiSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZapisPracy
+        fields = ['id', 'idPracownika', 'data', 'przepracowaneMinuty']
