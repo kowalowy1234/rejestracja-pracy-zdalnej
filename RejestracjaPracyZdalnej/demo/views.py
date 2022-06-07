@@ -12,8 +12,10 @@ from rest_framework import permissions
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-User = get_user_model()
+from datetime import date
+from dateutil.relativedelta import relativedelta
 
+User = get_user_model()
 
 
 class FirmaList(generics.ListCreateAPIView):
@@ -50,7 +52,6 @@ class PracaDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Praca.objects.all()
     serializer_class = PracaSerializer
     name = 'praca-details'
-
 
 
 class UserList(generics.ListCreateAPIView):
@@ -132,30 +133,45 @@ class PrzepracowaneMinuty(generics.ListAPIView):
     filter_fields = {'created_at': ['iexact', 'lte', 'gte']}
     http_method_names = ['get', 'post', 'head']
 
-    GROUP_BY = {
-        "day": 1,
-        "week": 7,
-        "month": 30,
-        "year": 365
-    }
+    GROUP_BY = ["day", "week", "month", "year"]
+
+    def obliczZakresDat(self, group_by_field):
+        today = date.today()
+        if group_by_field == "day":
+            first_day = today - relativedelta(days=1)
+            last_day = first_day
+        elif group_by_field == "week":
+            first_day = today - relativedelta(days=today.weekday(), weeks=1)
+            last_day = today - relativedelta(days=today.weekday()) - relativedelta(days=1)
+        elif group_by_field == "month":
+            d = today - relativedelta(months=1)
+            first_day = date(d.year, d.month, 1)  # pierwszy dzień z poprzedniego miesiąca
+            last_day = date(today.year, today.month, 1) - relativedelta(days=1)  # ostatni dzień poprzedniego miesiąca
+        elif group_by_field == "year":
+            d = today - relativedelta(years=1)
+            first_day = date(d.year, 1, 1)
+            last_day = date(d.year, 12, 31)
+        return first_day, last_day
 
     def list(self, request, *args, **kwargs):
         today = datetime.date.today()
         slug = self.kwargs['pk']
 
         group_by_field = request.GET.get('group_by', None)
-        if group_by_field and group_by_field not in self.GROUP_BY.keys():
+        if group_by_field and group_by_field not in self.GROUP_BY:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if group_by_field:
+            start, end = self.obliczZakresDat(group_by_field)
             queryset = ZapisPracy.objects.filter(
                 idPracownika=slug,
-                data__gte=today - datetime.timedelta(days=self.GROUP_BY[group_by_field])
-                ).values(
-                    'idPracownika'
-                ).annotate(
-                    przepracowaneMinuty=Sum('przepracowaneMinuty')
-                )
+                data__gte=start,
+                data__lte=end
+            ).values(
+                'idPracownika'
+            ).annotate(
+                przepracowaneMinuty=Sum('przepracowaneMinuty')
+            )
 
             if queryset:
                 return Response(queryset)
