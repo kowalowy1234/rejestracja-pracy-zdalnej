@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import json
 
 User = get_user_model()
 
@@ -153,18 +154,20 @@ class PrzepracowaneMinuty(generics.ListAPIView):
             last_day = date(d.year, 12, 31)
         return first_day, last_day
 
+
     def list(self, request, *args, **kwargs):
         today = datetime.date.today()
-        slug = self.kwargs['pk']
 
         group_by_field = request.GET.get('group_by', None)
+
         if group_by_field and group_by_field not in self.GROUP_BY:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if group_by_field:
             start, end = self.obliczZakresDat(group_by_field)
+            final_data = []
+
             queryset = ZapisPracy.objects.filter(
-                idPracownika=slug,
                 data__gte=start,
                 data__lte=end
             ).values(
@@ -173,10 +176,18 @@ class PrzepracowaneMinuty(generics.ListAPIView):
                 przepracowaneMinuty=Sum('przepracowaneMinuty')
             )
 
-            if queryset:
-                return Response(queryset)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            slownik = {}
+            for x in range(len(queryset)):
+                slownik = queryset[x]
+                tmp = queryset[x]['idPracownika']
+                query2 = User.objects.filter(id=tmp).values('first_name', 'last_name', 'email')
+                slownik["user"] = query2[0]
+                final_data.append(slownik)
 
+
+            if final_data:
+                return Response(final_data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
@@ -190,7 +201,7 @@ class ApiRoot(generics.GenericAPIView):
                          'statystyki': "http://127.0.0.1:8000/auth/statystyki",
                          'statystykiUser': "http://127.0.0.1:8000/auth/statystyki-user/1",
                          'statystykiUserList': "http://127.0.0.1:8000/auth/statystyki-user-list/1",
-                         'przepracowaneMinutyDzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=day",
-                         'przepracowaneMinutyTydzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=week",
-                         'przepracowaneMinutyMiesiac': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=month",
-                         'przepracowaneMinutyRok': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=year", })
+                         'przepracowaneMinutyDzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=day",
+                         'przepracowaneMinutyTydzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=week",
+                         'przepracowaneMinutyMiesiac': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=month",
+                         'przepracowaneMinutyRok': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=year", })
