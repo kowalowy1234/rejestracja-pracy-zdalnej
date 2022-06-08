@@ -15,7 +15,7 @@ urlpatterns = [
     path('statystyki', views.StatystykiList.as_view(), name='statystyki'),
     path('statystyki-user/<int:pk>', views.StatystykiUser.as_view(), name='statystyki-user'),
     path('statystyki-user-list/<int:pk>', views.StatystykiUserList.as_view(), name='statystyki-user-list'),
-    path('przepracowane-minuty/<int:pk>/', views.PrzepracowaneMinuty.as_view(), name='przepracowane-minuty'),
+    path('przepracowane-minuty/', views.PrzepracowaneMinuty.as_view(), name='przepracowane-minuty'),
     path('', views.ApiRoot.as_view(), name=views.ApiRoot.name),
     path('', include('djoser.urls')),
     path('', include('djoser.urls.authtoken')),

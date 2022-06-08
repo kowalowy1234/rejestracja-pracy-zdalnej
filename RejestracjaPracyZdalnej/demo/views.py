@@ -14,6 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import json
 
 User = get_user_model()
 
@@ -155,26 +156,48 @@ class PrzepracowaneMinuty(generics.ListAPIView):
 
     def list(self, request, *args, **kwargs):
         today = datetime.date.today()
-        slug = self.kwargs['pk']
 
         group_by_field = request.GET.get('group_by', None)
+
+        if request.method == 'GET':
+            data = json.loads(request.body)
+            array = json.dumps(data)
+            body = json.loads(array)
+            body = body['ids']
+
+            if(not body):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
         if group_by_field and group_by_field not in self.GROUP_BY:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
         if group_by_field:
             start, end = self.obliczZakresDat(group_by_field)
-            queryset = ZapisPracy.objects.filter(
-                idPracownika=slug,
-                data__gte=start,
-                data__lte=end
-            ).values(
-                'idPracownika'
-            ).annotate(
-                przepracowaneMinuty=Sum('przepracowaneMinuty')
-            )
+            final_data = []
 
-            if queryset:
-                return Response(queryset)
+
+            for x in body:
+                queryset = ZapisPracy.objects.filter(
+                    idPracownika=x,
+                    data__gte=start,
+                    data__lte=end
+                ).values(
+                    'idPracownika'
+                ).annotate(
+                    przepracowaneMinuty=Sum('przepracowaneMinuty')
+                )
+
+                query2 = User.objects.filter(id=x).values('first_name', 'last_name', 'email')
+
+                if queryset:
+                    slownik = queryset[0]
+                    slownik["user"] = query2[0]
+                    final_data.append(slownik)
+
+
+            if final_data:
+                return Response(final_data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -190,7 +213,7 @@ class ApiRoot(generics.GenericAPIView):
                          'statystyki': "http://127.0.0.1:8000/auth/statystyki",
                          'statystykiUser': "http://127.0.0.1:8000/auth/statystyki-user/1",
                          'statystykiUserList': "http://127.0.0.1:8000/auth/statystyki-user-list/1",
-                         'przepracowaneMinutyDzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=day",
-                         'przepracowaneMinutyTydzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=week",
-                         'przepracowaneMinutyMiesiac': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=month",
-                         'przepracowaneMinutyRok': "http://127.0.0.1:8000/auth/przepracowane-minuty/1/?group_by=year", })
+                         'przepracowaneMinutyDzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=day",
+                         'przepracowaneMinutyTydzien': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=week",
+                         'przepracowaneMinutyMiesiac': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=month",
+                         'przepracowaneMinutyRok': "http://127.0.0.1:8000/auth/przepracowane-minuty/?group_by=year", })
