@@ -154,20 +154,11 @@ class PrzepracowaneMinuty(generics.ListAPIView):
             last_day = date(d.year, 12, 31)
         return first_day, last_day
 
+
     def list(self, request, *args, **kwargs):
         today = datetime.date.today()
 
         group_by_field = request.GET.get('group_by', None)
-
-        if request.method == 'GET':
-            data = json.loads(request.body)
-            array = json.dumps(data)
-            body = json.loads(array)
-            body = body['ids']
-
-            if(not body):
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
         if group_by_field and group_by_field not in self.GROUP_BY:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -176,30 +167,27 @@ class PrzepracowaneMinuty(generics.ListAPIView):
             start, end = self.obliczZakresDat(group_by_field)
             final_data = []
 
+            queryset = ZapisPracy.objects.filter(
+                data__gte=start,
+                data__lte=end
+            ).values(
+                'idPracownika'
+            ).annotate(
+                przepracowaneMinuty=Sum('przepracowaneMinuty')
+            )
 
-            for x in body:
-                queryset = ZapisPracy.objects.filter(
-                    idPracownika=x,
-                    data__gte=start,
-                    data__lte=end
-                ).values(
-                    'idPracownika'
-                ).annotate(
-                    przepracowaneMinuty=Sum('przepracowaneMinuty')
-                )
-
-                query2 = User.objects.filter(id=x).values('first_name', 'last_name', 'email')
-
-                if queryset:
-                    slownik = queryset[0]
-                    slownik["user"] = query2[0]
-                    final_data.append(slownik)
+            slownik = {}
+            for x in range(len(queryset)):
+                slownik = queryset[x]
+                tmp = queryset[x]['idPracownika']
+                query2 = User.objects.filter(id=tmp).values('first_name', 'last_name', 'email')
+                slownik["user"] = query2[0]
+                final_data.append(slownik)
 
 
             if final_data:
                 return Response(final_data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
-
 
 class ApiRoot(generics.GenericAPIView):
     name = 'api-root'
